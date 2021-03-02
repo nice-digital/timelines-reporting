@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace NICE.Timelines.Controllers
@@ -20,8 +18,20 @@ namespace NICE.Timelines.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult Post()
+		public async Task<ActionResult> Post()
 		{
+			using (StreamReader stream = new StreamReader(HttpContext.Request.Body))
+			{
+				
+				var body = await stream.ReadToEndAsync();
+			}
+			return Ok();
+		}
+
+		[HttpGet]
+		public ActionResult Get(string body)
+		{
+			
 			return Ok();
 		}
 	}
