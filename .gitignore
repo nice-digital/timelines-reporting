@@ -252,3 +252,4 @@ netcoreapp2.0/*
 .vscode
 
 
+/NICE.Timelines/NICE.Timelines/logs
