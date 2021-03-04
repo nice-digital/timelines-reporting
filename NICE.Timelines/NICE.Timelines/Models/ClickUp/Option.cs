@@ -2,7 +2,7 @@
 
 namespace NICE.Timelines.Models
 {
-	public class ClickUpOption
+	public class Option
 	{
 		public Guid Id { get; set; }
 

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace NICE.Timelines.Models
 {
-	public class ClickUpCustomField
+	public class CustomField
 	{
 		[JsonPropertyName("id")]
 		public Guid FieldId { get; set; }
@@ -14,6 +14,6 @@ namespace NICE.Timelines.Models
 		public JsonElement Value { get; set; }
 
 		[JsonPropertyName("type_config")]
-		public ClickUpTypeConfig TypeConfig { get; set; }
+		public TypeConfig TypeConfig { get; set; }
 	}
 }

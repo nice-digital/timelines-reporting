@@ -2,17 +2,19 @@
 using System;
 using System.Linq;
 using System.Text.Json.Serialization;
+using NICE.Timelines.Models.Database;
 
 namespace NICE.Timelines.Models
 {
-	public class ClickUpMessage
+	public class Message
 	{
-		public Guid Id { get; set; }
+		[JsonPropertyName("id")]
+		public Guid ClickUpId { get; set; }
 
 		[JsonPropertyName("date")]
 		public DateTime WebHookCallDateTime { get; set; }
 
-		public ClickUpPayload Payload { get; set; }
+		public Payload Payload { get; set; }
 
 
 		/// <summary>
@@ -20,13 +22,14 @@ namespace NICE.Timelines.Models
 		///
 		/// TODO: This function needs revisiting in the beta, to handle nulls gracefully and logging.
 		/// TODO: Also the fields are currently picked by the field name. they should probably be changed id (a Guid)
+		/// TODO: and move this function somewhere else.
 		/// </summary>
 		/// <returns></returns>
-		public TimelinesTask ToTimelinesTask()
+		public TimelineTask ToTimelinesTask()
 		{
 			var acid = int.Parse(Payload.CustomFields.First(field => field.Name.Equals(Constants.ClickUp.FieldNames.ACID, StringComparison.InvariantCultureIgnoreCase)).Value.ToObject<string>()); //TODO: ACID is a string in clickup. needs to be a number.
 
-			int? dateTypeId = null;
+			var dateTypeId = 0;
 			string dateTypeDescription = null;
 			var dateTypeField = Payload.CustomFields.FirstOrDefault(field => field.Name.Equals(Constants.ClickUp.FieldNames.DateType, StringComparison.InvariantCultureIgnoreCase));
 			if (dateTypeField != null)
@@ -46,7 +49,7 @@ namespace NICE.Timelines.Models
 			
 			var dueDate = string.IsNullOrEmpty(Payload.DueDateSecondsSinceUnixEpochAsString)? null : double.Parse(Payload.DueDateSecondsSinceUnixEpochAsString).ToDateTime();
 
-			return new TimelinesTask(Id, acid, dateTypeId, dateTypeDescription, dueDate, actualDate);
+			return new TimelineTask(acid, ClickUpId, dateTypeId, dateTypeDescription, dueDate, actualDate);
 		}
 	}
 }

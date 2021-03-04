@@ -10,6 +10,7 @@ namespace NICE.Timelines.Common
 			var json = element.GetRawText();
 			return JsonSerializer.Deserialize<T>(json);
 		}
+
 		public static T ToObject<T>(this JsonDocument document)
 		{
 			var json = document.RootElement.GetRawText();
@@ -18,10 +19,10 @@ namespace NICE.Timelines.Common
 
 		public static DateTime? ToDateTime(this double millisecondsSinceUnixEpoch)
 		{
-			var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-			dtDateTime = dtDateTime.AddMilliseconds(millisecondsSinceUnixEpoch).ToLocalTime();
-			return dtDateTime;
+			var unixEpochDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+			return unixEpochDateTime.AddMilliseconds(millisecondsSinceUnixEpoch).ToLocalTime();
 		}
+
 		public static DateTime? ToDateTime(this double? secondsSinceUnixEpoch)
 		{
 			if (!secondsSinceUnixEpoch.HasValue)
@@ -29,6 +30,5 @@ namespace NICE.Timelines.Common
 
 			return ToDateTime(secondsSinceUnixEpoch.Value);
 		}
-
 	}
 }

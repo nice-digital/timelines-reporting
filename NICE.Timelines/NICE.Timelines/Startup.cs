@@ -1,17 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using NICE.Timelines.Models.Database;
 using NICE.Timelines.Services;
 
 namespace NICE.Timelines
@@ -29,6 +24,9 @@ namespace NICE.Timelines
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.TryAddTransient<IDataAccessService, DataAccessService>();
+
+			services.AddDbContext<TimelinesContext>(options =>
+				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
 			services.AddControllers();
 			services.AddSwaggerGen(c =>

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace NICE.Timelines.Models
 {
-	public class ClickUpPayload
+	public class Payload
 	{
 		public string Name { get; set; }
 
@@ -11,6 +11,6 @@ namespace NICE.Timelines.Models
 		public string DueDateSecondsSinceUnixEpochAsString { get; set; }
 
 		[JsonPropertyName("custom_fields")]
-		public IEnumerable<ClickUpCustomField> CustomFields { get; set; }
+		public IEnumerable<CustomField> CustomFields { get; set; }
 	}
 }

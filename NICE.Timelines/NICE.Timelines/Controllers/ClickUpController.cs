@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NICE.Timelines.Services;
-using System.IO;
-using System.Threading.Tasks;
 using NICE.Timelines.Models;
+using NICE.Timelines.Services;
+using System.Threading.Tasks;
 
 namespace NICE.Timelines.Controllers
 {
@@ -22,40 +21,34 @@ namespace NICE.Timelines.Controllers
 		}
 
 		/// <summary>
-		/// this endpoint is hit by the clickup webhook call.
+		/// this endpoint is hit by the clickup webhook call when a task's Due date or actual date are changed, and that task is listed as a "Key date"
 		///
 		/// </summary>
 		/// <returns></returns>
-		[HttpPost]
+		[HttpPost("SaveOrUpdate")]
 		[Consumes("application/json")]
-		public async Task<ActionResult> Post([FromBody] ClickUpMessage clickUpMessage) 
+		public async Task<ActionResult> SaveOrUpdate([FromBody] Message clickUpMessage) 
 		{
 			// todo: authenticate the request header "X-Signature"
 
-			string taskInJSON;
-			using (var stream = new StreamReader(HttpContext.Request.Body))
-			{
-				taskInJSON = await stream.ReadToEndAsync();
-			}
-			_logger.LogInformation(taskInJSON);
-
-			//var clickupTask = _parsingService.GetTask(taskInJSON);
-			
-			_dataAccessService.SaveTask(clickUpMessage.ToTimelinesTask());
+			await _dataAccessService.SaveOrUpdateTask(clickUpMessage);
 
 			return Ok();
 		}
 
-
 		/// <summary>
-		/// This endpoint is just for local debug purposes.
+		/// This endpoint is hit by the clickup webhook call when a task's "key date" field is set to false. In which case the matching entry should be removed from our DB.
 		/// </summary>
-		/// <param name="test"></param>
+		/// <param name="clickUpMessage"></param>
 		/// <returns></returns>
-		[HttpGet]
-		public ActionResult Get(string test)
+		[HttpPost("Delete")]
+		[Consumes("application/json")]
+		public async Task<ActionResult> Delete([FromBody] Message clickUpMessage)
 		{
-			_logger.LogInformation(test);
+			// todo: authenticate the request header "X-Signature" (even more important here)
+
+			await _dataAccessService.DeleteTask(clickUpMessage);
+
 			return Ok();
 		}
 	}
