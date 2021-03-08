@@ -11,10 +11,15 @@ namespace NICE.Timelines.Common
 			return JsonSerializer.Deserialize<T>(json);
 		}
 
-		public static T ToObject<T>(this JsonDocument document)
+		public static string ToStringObject(this JsonElement element) //TODO: make the generic version work for all types..
 		{
-			var json = document.RootElement.GetRawText();
-			return JsonSerializer.Deserialize<T>(json);
+			if (element.ValueKind == System.Text.Json.JsonValueKind.Undefined)
+			{
+				return null;
+			}
+
+			var json = element.GetRawText();
+			return JsonSerializer.Deserialize<string>(json);
 		}
 
 		public static DateTime? ToDateTime(this double millisecondsSinceUnixEpoch)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NICE.Timelines.Models;
 using NICE.Timelines.Services;
@@ -31,6 +32,15 @@ namespace NICE.Timelines.Controllers
 		{
 			// todo: authenticate the request header "X-Signature"
 
+			//logging the received json for debug purposes only
+			//string taskInJSON;
+			//using (var stream = new StreamReader(HttpContext.Request.Body))
+			//{
+			//	taskInJSON = await stream.ReadToEndAsync();
+			//}
+			//_logger.LogInformation(taskInJSON);
+
+
 			await _dataAccessService.SaveOrUpdateTask(clickUpMessage);
 
 			return Ok();
@@ -46,6 +56,15 @@ namespace NICE.Timelines.Controllers
 		public async Task<ActionResult> Delete([FromBody] Message clickUpMessage)
 		{
 			// todo: authenticate the request header "X-Signature" (even more important here)
+
+			//logging the received json for debug purposes only
+			string taskInJSON;
+			using (var stream = new StreamReader(HttpContext.Request.Body))
+			{
+				taskInJSON = await stream.ReadToEndAsync();
+			}
+			_logger.LogInformation(taskInJSON);
+
 
 			await _dataAccessService.DeleteTask(clickUpMessage);
 

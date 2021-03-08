@@ -5,6 +5,9 @@ namespace NICE.Timelines.Models
 {
 	public class Payload
 	{
+		[JsonPropertyName("id")]
+		public string ClickUpTaskId { get; set; }
+
 		public string Name { get; set; }
 
 		[JsonPropertyName("due_date")]

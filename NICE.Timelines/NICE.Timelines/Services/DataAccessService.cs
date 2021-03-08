@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NICE.Timelines.Models;
 using NICE.Timelines.Models.Database;
 
@@ -13,10 +14,12 @@ namespace NICE.Timelines.Services
 
 	public class DataAccessService : IDataAccessService
 	{
+		private readonly ILogger<DataAccessService> _logger;
 		private readonly TimelinesContext _dbContext;
 
-		public DataAccessService(TimelinesContext dbContext)
+		public DataAccessService(ILogger<DataAccessService> logger, TimelinesContext dbContext)
 		{
+			_logger = logger;
 			_dbContext = dbContext;
 		}
 

@@ -9,7 +9,7 @@ namespace NICE.Timelines.Models
 	public class Message
 	{
 		[JsonPropertyName("id")]
-		public Guid ClickUpId { get; set; }
+		public string WebhookMessageId { get; set; }
 
 		[JsonPropertyName("date")]
 		public DateTime WebHookCallDateTime { get; set; }
@@ -41,15 +41,20 @@ namespace NICE.Timelines.Models
 			}
 
 			DateTime? actualDate = null;
-			var actualDateString = Payload.CustomFields.FirstOrDefault(field => field.Name.Equals(Constants.ClickUp.FieldNames.ActualDate, StringComparison.InvariantCultureIgnoreCase))?.Value.ToObject<string>();
-			if (!string.IsNullOrEmpty(actualDateString))
+			var actualDateStringJsonElement = Payload.CustomFields.FirstOrDefault(field => field.Name.Equals(Constants.ClickUp.FieldNames.ActualDate, StringComparison.InvariantCultureIgnoreCase))?.Value;
+
+			if (actualDateStringJsonElement.HasValue)
 			{
-				actualDate = (double.Parse(actualDateString)).ToDateTime();
+				var actualDateString = actualDateStringJsonElement.Value.ToStringObject();
+				if (!string.IsNullOrEmpty(actualDateString))
+				{
+					actualDate = (double.Parse(actualDateString)).ToDateTime();
+				}
 			}
-			
+
 			var dueDate = string.IsNullOrEmpty(Payload.DueDateSecondsSinceUnixEpochAsString)? null : double.Parse(Payload.DueDateSecondsSinceUnixEpochAsString).ToDateTime();
 
-			return new TimelineTask(acid, ClickUpId, dateTypeId, dateTypeDescription, dueDate, actualDate);
+			return new TimelineTask(acid, Payload.ClickUpTaskId, dateTypeId, dateTypeDescription, dueDate, actualDate);
 		}
 	}
 }
