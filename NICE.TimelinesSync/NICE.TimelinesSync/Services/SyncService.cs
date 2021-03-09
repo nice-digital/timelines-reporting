@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace NICE.TimelinesSync.Services
@@ -22,9 +21,7 @@ namespace NICE.TimelinesSync.Services
 		{
 			Console.WriteLine("Started processing");
 
-			var tasks = await _clickUpService.GetTasks();
-
-			Console.WriteLine($"task count:{tasks.Count()}");
+			await _clickUpService.SaveAndUpdateTasks();
 
 			Console.WriteLine("Ended processing");
 		}

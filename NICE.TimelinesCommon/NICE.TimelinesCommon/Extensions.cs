@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json;
 
-namespace NICE.Timelines.Common
+namespace NICE.TimelinesCommon
 {
 	public static class Extensions
 	{

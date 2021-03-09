@@ -1,22 +1,20 @@
-﻿using NICE.TimelinesSync.Configuration;
+﻿using NICE.TimelinesDB.Models;
+using NICE.TimelinesDB.Services;
+using NICE.TimelinesSync.Configuration;
+using NICE.TimelinesSync.Models.ClickUp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using NICE.TimelinesDB.Models;
-using NICE.TimelinesDB.Services;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using NICE.TimelinesSync.Models.ClickUp;
-using NICE.TimelinesSync.Common;
+using System.Threading.Tasks;
 
 namespace NICE.TimelinesSync.Services
 {
 	public interface IClickUpService
 	{
-		Task<IEnumerable<TimelineTask>> GetTasks();
+		Task SaveAndUpdateTasks();
 	}
 
 	public class ClickUpService : IClickUpService
@@ -35,13 +33,18 @@ namespace NICE.TimelinesSync.Services
 			_httpClientFactory = httpClientFactory;
 		}
 
-		public async Task<IEnumerable<TimelineTask>> GetTasks()
+		public async Task SaveAndUpdateTasks()
 		{
-			var httpClient = _httpClientFactory.CreateClient(Constants.ClickUpHttpClientName);
+			var httpClient = _httpClientFactory.CreateClient();
+
+			//do //TODO: paging
+			//{
 
 			var requestUri = new Uri(new Uri("https://api.clickup.com/api/v2/"),
-				$"team/{_clickUpConfig.TeamId}/task?page=0&list_ids%5B%5D=%5B%22{_clickUpConfig.ListId}22%5D&order_by=due_date&reverse=true&include_closed=true" + 
-				"&custom_fields=[{\"field_id\":\"5bb24b9e-a86d-4ad5-b301-9ce08f431b1e\",\"operator\":\"=\",\"value\":true}]");
+				$"list/{_clickUpConfig.ListId}/task?"
+				+ "custom_fields=[{\"field_id\":\"" + TimelinesCommon.Constants.ClickUp.Fields.KeyDateId + "\",\"operator\":\"=\",\"value\":true}]"
+				+ "&include_closed=true&page=0" //todo: paging
+				);
 
 			var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
@@ -56,10 +59,14 @@ namespace NICE.TimelinesSync.Services
 				}
 				responseJson = await response.Content.ReadAsStringAsync();
 			}
-			var clickUpTasks = JsonSerializer.Deserialize<CIPResponseTasks>(responseJson);
+			var clickUpTasks = JsonSerializer.Deserialize<ClickUpTasks>(responseJson);
 
-			
-			throw new NotImplementedException();
+			foreach (var clickUpTask in clickUpTasks.Tasks)
+			{
+				await _databaseService.SaveOrUpdateTimelineTask(clickUpTask);
+			}
+
+			//} while (b);
 		}
 	}
 }

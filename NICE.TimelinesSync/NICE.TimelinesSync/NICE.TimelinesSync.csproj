@@ -30,10 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\ClickUp\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\..\NICE.TimelinesCommon\NICE.TimelinesCommon\NICE.TimelinesCommon.csproj" />
     <ProjectReference Include="..\..\NICE.TimelinesDB\NICE.TimelinesDB\NICE.TimelinesDB.csproj" />
   </ItemGroup>
 

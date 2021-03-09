@@ -2,12 +2,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using NICE.TimelinesCommon.Models;
 
 namespace NICE.TimelinesDB.Services
 {
 	public interface IDatabaseService
 	{
-		Task SaveOrUpdateTimelineTask(TimelineTask timelineTask);
+		Task SaveOrUpdateTimelineTask(ClickUpTask clickUpTask);
+		Task DeleteTimelineTask(ClickUpTask clickUpTask);
 	}
 
 	public class DatabaseService : IDatabaseService
@@ -19,9 +21,11 @@ namespace NICE.TimelinesDB.Services
 			_dbContext = dbContext;
 		}
 
-		public async Task SaveOrUpdateTimelineTask(TimelineTask timelineTaskToSaveOrUpdate)
+		public async Task SaveOrUpdateTimelineTask(ClickUpTask clickUpTask)
 		{
-			var existingTimelineTask = _dbContext.TimelineTasks.SingleOrDefault(t => t.ClickUpId.Equals(timelineTaskToSaveOrUpdate.ClickUpId, StringComparison.OrdinalIgnoreCase));
+			var timelineTaskToSaveOrUpdate = Converters.ConvertToTimelineTask(clickUpTask);
+
+			var existingTimelineTask = _dbContext.TimelineTasks.SingleOrDefault(t => t.ClickUpId.Equals(timelineTaskToSaveOrUpdate.ClickUpId));
 
 			if (existingTimelineTask != null) //it's an update
 			{
@@ -39,6 +43,19 @@ namespace NICE.TimelinesDB.Services
 			}
 
 			await _dbContext.SaveChangesAsync();
+		}
+
+		public async Task DeleteTimelineTask(ClickUpTask clickUpTask)
+		{
+			var timelineTaskToDelete = Converters.ConvertToTimelineTask(clickUpTask);
+
+			var existingTimelineTask = _dbContext.TimelineTasks.SingleOrDefault(t => t.ClickUpId.Equals(timelineTaskToDelete.ClickUpId));
+
+			if (existingTimelineTask != null)
+			{
+				_dbContext.TimelineTasks.Remove(existingTimelineTask);
+				await _dbContext.SaveChangesAsync();
+			}
 		}
 	}
 }

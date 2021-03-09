@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NICE.Timelines.Models;
-using NICE.Timelines.Services;
 using System.Threading.Tasks;
+using NICE.TimelinesDB.Services;
 
 namespace NICE.Timelines.Controllers
 {
@@ -13,12 +13,12 @@ namespace NICE.Timelines.Controllers
 	{
 		
 		private readonly ILogger<ClickUpController> _logger;
-		private readonly IDataAccessService _dataAccessService;
+		private readonly IDatabaseService _databaseService;
 
-		public ClickUpController(ILogger<ClickUpController> logger, IDataAccessService dataAccessService)
+		public ClickUpController(ILogger<ClickUpController> logger, IDatabaseService databaseService)
 		{
 			_logger = logger;
-			_dataAccessService = dataAccessService;
+			_databaseService = databaseService;
 		}
 
 		/// <summary>
@@ -28,7 +28,7 @@ namespace NICE.Timelines.Controllers
 		/// <returns></returns>
 		[HttpPost("SaveOrUpdate")]
 		[Consumes("application/json")]
-		public async Task<ActionResult> SaveOrUpdate([FromBody] Message clickUpMessage) 
+		public async Task<ActionResult> SaveOrUpdate([FromBody] WebhookMessage clickUpMessage) 
 		{
 			// todo: authenticate the request header "X-Signature"
 
@@ -39,9 +39,8 @@ namespace NICE.Timelines.Controllers
 			//	taskInJSON = await stream.ReadToEndAsync();
 			//}
 			//_logger.LogInformation(taskInJSON);
-
-
-			await _dataAccessService.SaveOrUpdateTask(clickUpMessage);
+			
+			await _databaseService.SaveOrUpdateTimelineTask(clickUpMessage.ClickUpTask);
 
 			return Ok();
 		}
@@ -53,7 +52,7 @@ namespace NICE.Timelines.Controllers
 		/// <returns></returns>
 		[HttpPost("Delete")]
 		[Consumes("application/json")]
-		public async Task<ActionResult> Delete([FromBody] Message clickUpMessage)
+		public async Task<ActionResult> Delete([FromBody] WebhookMessage clickUpMessage)
 		{
 			// todo: authenticate the request header "X-Signature" (even more important here)
 
@@ -66,7 +65,7 @@ namespace NICE.Timelines.Controllers
 			_logger.LogInformation(taskInJSON);
 
 
-			await _dataAccessService.DeleteTask(clickUpMessage);
+			await _databaseService.DeleteTimelineTask(clickUpMessage.ClickUpTask);
 
 			return Ok();
 		}

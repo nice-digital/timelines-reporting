@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NICE.TimelinesSync.Configuration
+﻿namespace NICE.TimelinesSync.Configuration
 {
 	public class ClickUpConfig
 	{

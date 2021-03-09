@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using NICE.Timelines.Models.Database;
-using NICE.Timelines.Services;
+using NICE.TimelinesDB.Models;
+using NICE.TimelinesDB.Services;
 
 namespace NICE.Timelines
 {
@@ -23,8 +23,7 @@ namespace NICE.Timelines
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.TryAddTransient<IDataAccessService, DataAccessService>();
-
+			services.TryAddTransient<IDatabaseService, DatabaseService>();
 			services.AddDbContext<TimelinesContext>(options =>
 				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 

@@ -2,18 +2,20 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace NICE.Timelines.Models
+namespace NICE.TimelinesCommon.Models
 {
-	public class CustomField
+	public class ClickUpCustomField
 	{
 		[JsonPropertyName("id")]
 		public Guid FieldId { get; set; }
 
+		[JsonPropertyName("name")]
 		public string Name { get; set; }
 
+		[JsonPropertyName("value")]
 		public JsonElement Value { get; set; }
 
 		[JsonPropertyName("type_config")]
-		public TypeConfig TypeConfig { get; set; }
+		public ClickUpTypeConfig ClickUpTypeConfig { get; set; }
 	}
 }
