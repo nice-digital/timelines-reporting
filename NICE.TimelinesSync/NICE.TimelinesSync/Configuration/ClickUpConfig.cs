@@ -1,9 +1,10 @@
-﻿namespace NICE.TimelinesSync.Configuration
+﻿using System.Collections.Generic;
+
+namespace NICE.TimelinesSync.Configuration
 {
 	public class ClickUpConfig
 	{
 		public string AccessToken { get; set; }
-		public string TeamId { get; set; }
-		public string ListId { get; set; }
+		public IEnumerable<int> SpaceIds { get; set; }
 	}
 }

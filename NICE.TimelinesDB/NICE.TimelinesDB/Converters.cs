@@ -8,15 +8,20 @@ namespace NICE.TimelinesDB
 {
 	public static class Converters
 	{
+		public static int GetACIDFromClickUpTask(ClickUpTask clickUpTask)
+		{
+			return int.Parse(clickUpTask.CustomFields.First(field => field.Name.Equals(Constants.ClickUp.Fields.ACID, StringComparison.InvariantCultureIgnoreCase)).Value.ToObject<string>()); //TODO: ACID is a string in clickup. needs to be a number.
+		}
+
 		/// <summary>
 		/// TODO: this needs changing for the beta!! it needs to gracefully handle errors / missing data, with logging
-		/// TODO: also it should probably live somewhere else.
+		/// TODO: also it should probably live somewhere else too
 		/// </summary>
 		/// <param name="clickUpTask"></param>
 		/// <returns></returns>
 		public static TimelineTask ConvertToTimelineTask(ClickUpTask clickUpTask)
 		{
-			var acid = int.Parse(clickUpTask.CustomFields.First(field => field.Name.Equals(Constants.ClickUp.Fields.ACID, StringComparison.InvariantCultureIgnoreCase)).Value.ToObject<string>()); //TODO: ACID is a string in clickup. needs to be a number.
+			var acid = GetACIDFromClickUpTask(clickUpTask);
 
 			var dateTypeId = 0;
 			string dateTypeDescription = "Not found";

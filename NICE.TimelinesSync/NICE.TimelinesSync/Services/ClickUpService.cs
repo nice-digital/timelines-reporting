@@ -1,20 +1,22 @@
-﻿using NICE.TimelinesDB.Models;
-using NICE.TimelinesDB.Services;
+﻿using NICE.TimelinesDB.Services;
 using NICE.TimelinesSync.Configuration;
 using NICE.TimelinesSync.Models.ClickUp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
+using NICE.TimelinesCommon.Models;
+using NICE.TimelinesDB;
 
 namespace NICE.TimelinesSync.Services
 {
 	public interface IClickUpService
 	{
-		Task SaveAndUpdateTasks();
+		Task ProcessSpace(int spaceId);
 	}
 
 	public class ClickUpService : IClickUpService
@@ -33,40 +35,86 @@ namespace NICE.TimelinesSync.Services
 			_httpClientFactory = httpClientFactory;
 		}
 
-		public async Task SaveAndUpdateTasks()
+
+		public async Task ProcessSpace(int spaceId)
 		{
-			var httpClient = _httpClientFactory.CreateClient();
+			var allFoldersInSpace = await GetFoldersInSpace(spaceId);
 
-			//do //TODO: paging
-			//{
-
-			var requestUri = new Uri(new Uri("https://api.clickup.com/api/v2/"),
-				$"list/{_clickUpConfig.ListId}/task?"
-				+ "custom_fields=[{\"field_id\":\"" + TimelinesCommon.Constants.ClickUp.Fields.KeyDateId + "\",\"operator\":\"=\",\"value\":true}]"
-				+ "&include_closed=true&page=0" //todo: paging
-				);
-
-			var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
-
-			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(_clickUpConfig.AccessToken);
-
-			string responseJson;
-			using (var response = await httpClient.SendAsync(httpRequestMessage))
+			var allListsInSpace = new List<ClickUpList>();
+			foreach (var folder in allFoldersInSpace)
 			{
-				if (response.StatusCode != HttpStatusCode.OK)
+				var lists = (await GetListsInFolder(folder.Id)).Lists;
+				if (lists.Any())
 				{
-					throw new Exception($"Non-200 received from clickup: {(int)response.StatusCode}");
+					allListsInSpace.AddRange(lists);
 				}
-				responseJson = await response.Content.ReadAsStringAsync();
 			}
-			var clickUpTasks = JsonSerializer.Deserialize<ClickUpTasks>(responseJson);
 
-			foreach (var clickUpTask in clickUpTasks.Tasks)
+			var folderlessLists = (await GetListsInSpaceThatAreNotInFolders(spaceId)).Lists;
+			if (folderlessLists.Any())
 			{
-				await _databaseService.SaveOrUpdateTimelineTask(clickUpTask);
+				allListsInSpace.AddRange(folderlessLists);
 			}
 
-			//} while (b);
+			foreach (var list in allListsInSpace) //a list should have an ACID
+			{
+				var tasks = (await GetTasksInList(list.Id)).Tasks;
+
+				int? acid = null;
+				foreach (var task in tasks)
+				{
+					acid = Converters.GetACIDFromClickUpTask(task); //TODO: get the ACID from the list, not from a task.
+					await _databaseService.SaveOrUpdateTimelineTask(task);
+				}
+
+				var clickUpIdsThatShouldExistInTheDatabase = tasks.Select(task => task.ClickUpTaskId);
+				_databaseService.DeleteTasksAssociatedWithThisACIDExceptForTheseClickUpTaskIds(acid.Value, clickUpIdsThatShouldExistInTheDatabase);
+			}
+
+		}
+
+		private async Task<IList<ClickUpFolder>> GetFoldersInSpace(int spaceId)
+		{
+			var relativeUri = $"space/{spaceId}/folder?archived=false";
+			var responseJson = await HitClickUpEndpoint(relativeUri);
+			return JsonSerializer.Deserialize<IList<ClickUpFolder>>(responseJson);
+		}
+
+		private async Task<ClickUpLists> GetListsInSpaceThatAreNotInFolders(int spaceId)
+		{
+			var relativeUri = $"space/{spaceId}/list?archived=false";
+			var responseJson = await HitClickUpEndpoint(relativeUri);
+			return JsonSerializer.Deserialize<ClickUpLists>(responseJson);
+		}
+
+		public async Task<ClickUpLists> GetListsInFolder(int folderId)
+		{
+			var relativeUri = $"folder/{folderId}/list?archived=false";
+			var responseJson = await HitClickUpEndpoint(relativeUri);
+			return JsonSerializer.Deserialize<ClickUpLists>(responseJson);
+		}
+
+		public async Task<ClickUpTasks> GetTasksInList(int listId)
+		{
+			var relativeUri = $"list/{listId}/task?"
+			                  + "custom_fields=[{\"field_id\":\"" + TimelinesCommon.Constants.ClickUp.Fields.KeyDateId + "\",\"operator\":\"=\",\"value\":true}]"
+			                  + "&include_closed=true&page=0"; //todo: paging
+			var responseJson = await HitClickUpEndpoint(relativeUri);
+			return JsonSerializer.Deserialize<ClickUpTasks>(responseJson);
+		}
+
+		private async Task<string> HitClickUpEndpoint(string relativeUri)
+		{
+			var requestUri = new Uri(new Uri("https://api.clickup.com/api/v2/"), relativeUri);
+			var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
+			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(_clickUpConfig.AccessToken);
+			var httpClient = _httpClientFactory.CreateClient();
+			using var response = await httpClient.SendAsync(httpRequestMessage);
+			if (response.StatusCode != HttpStatusCode.OK)
+			{
+				throw new Exception($"Non-200 received from ClickUp: {(int)response.StatusCode}");
+			}
+			return await response.Content.ReadAsStringAsync();
 		}
 	}
 }
