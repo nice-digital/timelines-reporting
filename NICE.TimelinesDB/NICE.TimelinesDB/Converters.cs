@@ -35,15 +35,15 @@ namespace NICE.TimelinesDB
 			}
 
 			var stageId = 0;
-			var stageDescription = "Not found"; //TODO: uncomment below once implemented.
-			//var stageField = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageId, StringComparison.InvariantCultureIgnoreCase));
-			//if (stageField != null && stageField.Value.ValueKind != System.Text.Json.JsonValueKind.Undefined)
-			//{
-			//	var index = stageField.Value.ToObject<int>();
-			//	stageId = int.Parse(stageField.ClickUpTypeConfig.Options[index].Name);
+			var stageDescription = "Not found";
+			var stageField = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageId, StringComparison.InvariantCultureIgnoreCase));
+			if (stageField != null && stageField.Value.ValueKind != System.Text.Json.JsonValueKind.Undefined)
+			{
+				var index = stageField.Value.ToObject<int>();
+				stageId = int.Parse(stageField.ClickUpTypeConfig.Options[index].Name);
 
-			//	stageDescription = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageDescription, StringComparison.InvariantCultureIgnoreCase)).ClickUpTypeConfig.Options[index].Name;
-			//}
+				stageDescription = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageDescription, StringComparison.InvariantCultureIgnoreCase)).ClickUpTypeConfig.Options[index].Name;
+			}
 
 			DateTime? actualDate = null;
 			var actualDateStringJsonElement = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.ActualDate, StringComparison.InvariantCultureIgnoreCase))?.Value;
@@ -59,7 +59,7 @@ namespace NICE.TimelinesDB
 
 			var dueDate = string.IsNullOrEmpty(clickUpTask.DueDateSecondsSinceUnixEpochAsString) ? null : double.Parse(clickUpTask.DueDateSecondsSinceUnixEpochAsString).ToDateTime();
 
-			return new TimelineTask(acid, stepId, stepDescription, stageId, stageDescription, "todo: space id", "todo: folder id", clickUpTask.ClickUpTaskId, dueDate, actualDate);
+			return new TimelineTask(acid, stepId, stepDescription, stageId, stageDescription, clickUpTask.Space.Id, clickUpTask.Folder.Id, clickUpTask.ListId.Id, clickUpTask.ClickUpTaskId, dueDate, actualDate);
 		}
 	}
 }

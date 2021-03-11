@@ -20,10 +20,11 @@ namespace NICE.TimelinesDB.Migrations
                     StepDescription = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
 
                     StageId = table.Column<int>(type: "int", nullable: false),
-                    StageDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StageDescription = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
 
-                    ClickUpSpaceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClickUpFolderId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClickUpSpaceId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    ClickUpFolderId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    ClickUpListId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     ClickUpTaskId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
 
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: true),

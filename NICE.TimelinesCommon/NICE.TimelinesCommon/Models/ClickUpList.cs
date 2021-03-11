@@ -12,5 +12,8 @@ namespace NICE.TimelinesCommon.Models
 
 		[JsonPropertyName("content")]
 		public string Content { get; set; }
+
+		[JsonPropertyName("folder")]
+		public ClickUpFolder Folder { get; set; }
 	}
 }

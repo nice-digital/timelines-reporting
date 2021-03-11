@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>e0881a71-b590-418a-b9b6-d67fc6313350</UserSecretsId>
+    <AssemblyName>NICE.TimelinesAPI</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

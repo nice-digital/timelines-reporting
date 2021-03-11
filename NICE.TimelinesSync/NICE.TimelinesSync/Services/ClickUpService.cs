@@ -60,7 +60,7 @@ namespace NICE.TimelinesSync.Services
 				allListsInSpace.AddRange(folderlessLists);
 			}
 
-			foreach (var list in allListsInSpace) //a list should have an ACID
+			foreach (var list in allListsInSpace) //a list should have a unique ACID
 			{
 				var tasks = (await GetTasksInList(list.Id)).Tasks;
 

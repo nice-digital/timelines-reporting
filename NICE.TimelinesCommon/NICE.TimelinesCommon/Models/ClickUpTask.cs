@@ -3,6 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace NICE.TimelinesCommon.Models
 {
+	public class ClickUpId
+	{
+		[JsonPropertyName("id")]
+		public string Id { get; set; }
+	}
+
 	public class ClickUpTask
 	{
 		[JsonPropertyName("id")]
@@ -16,5 +22,15 @@ namespace NICE.TimelinesCommon.Models
 
 		[JsonPropertyName("custom_fields")]
 		public IEnumerable<ClickUpCustomField> CustomFields { get; set; }
+
+		[JsonPropertyName("list")]
+		public ClickUpId ListId { get; set; }
+
+		[JsonPropertyName("folder")]
+		public ClickUpId Folder { get; set; }
+
+		[JsonPropertyName("space")]
+		public ClickUpId Space { get; set; }
 	}
+
 }

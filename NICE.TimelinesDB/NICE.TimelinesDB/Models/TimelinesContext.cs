@@ -48,6 +48,7 @@ namespace NICE.TimelinesDB.Models
 
                 entity.Property(e => e.ClickUpSpaceId).HasMaxLength(255);
                 entity.Property(e => e.ClickUpFolderId).HasMaxLength(255);
+                entity.Property(e => e.ClickUpListId).HasMaxLength(255);
                 entity.Property(e => e.ClickUpTaskId).HasMaxLength(255);
 
             });

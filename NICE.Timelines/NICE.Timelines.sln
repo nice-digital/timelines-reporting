@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NICE.Timelines", "NICE.Timelines\NICE.Timelines.csproj", "{09DA60A1-5555-41A8-A86A-FF4C7CF67C28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NICE.TimelinesAPI", "NICE.Timelines\NICE.TimelinesAPI.csproj", "{09DA60A1-5555-41A8-A86A-FF4C7CF67C28}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NICE.TimelinesSync", "..\NICE.TimelinesSync\NICE.TimelinesSync\NICE.TimelinesSync.csproj", "{99E90059-B151-4C9E-B9F7-4A3242D21DF5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NICE.TimelinesDB", "..\NICE.TimelinesDB\NICE.TimelinesDB\NICE.TimelinesDB.csproj", "{57F9008E-9609-41FF-ADAD-D6E0BC8C4109}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NICE.TimelinesCommon", "..\NICE.TimelinesCommon\NICE.TimelinesCommon\NICE.TimelinesCommon.csproj", "{A0E75CED-B797-4F57-A53F-8F9A5A642207}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NICE.TimelinesCommon", "..\NICE.TimelinesCommon\NICE.TimelinesCommon\NICE.TimelinesCommon.csproj", "{A0E75CED-B797-4F57-A53F-8F9A5A642207}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
