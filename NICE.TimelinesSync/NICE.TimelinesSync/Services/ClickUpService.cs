@@ -100,7 +100,7 @@ namespace NICE.TimelinesSync.Services
 		private async Task<ClickUpTasks> GetTasksInList(string listId)
 		{
 			var relativeUri = $"list/{listId}/task?"
-			                  + "custom_fields=[{\"field_id\":\"" + TimelinesCommon.Constants.ClickUp.Fields.KeyDateId + "\",\"operator\":\"=\",\"value\":true}]"
+			                  + "custom_fields=[{\"field_id\":\"" + TimelinesCommon.Constants.ClickUp.Fields.MasterScheduleReportId + "\",\"operator\":\"=\",\"value\":true}]"
 			                  + "&include_closed=true&page=0"; //todo: paging
 			var responseJson = await HitClickUpEndpoint(relativeUri);
 			return JsonSerializer.Deserialize<ClickUpTasks>(responseJson);

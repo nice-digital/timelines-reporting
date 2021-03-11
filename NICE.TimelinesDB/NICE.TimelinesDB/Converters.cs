@@ -35,18 +35,18 @@ namespace NICE.TimelinesDB
 			}
 
 			var stageId = 0;
-			var stageDescription = "Not found";
-			var stageField = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageId, StringComparison.InvariantCultureIgnoreCase));
-			if (stageField != null && stageField.Value.ValueKind != System.Text.Json.JsonValueKind.Undefined)
-			{
-				var index = stageField.Value.ToObject<int>();
-				stageId = int.Parse(stageField.ClickUpTypeConfig.Options[index].Name);
+			var stageDescription = "Not found"; //TODO: uncomment below once implemented.
+			//var stageField = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageId, StringComparison.InvariantCultureIgnoreCase));
+			//if (stageField != null && stageField.Value.ValueKind != System.Text.Json.JsonValueKind.Undefined)
+			//{
+			//	var index = stageField.Value.ToObject<int>();
+			//	stageId = int.Parse(stageField.ClickUpTypeConfig.Options[index].Name);
 
-				stageDescription = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageDescription, StringComparison.InvariantCultureIgnoreCase)).ClickUpTypeConfig.Options[index].Name;
-			}
+			//	stageDescription = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageDescription, StringComparison.InvariantCultureIgnoreCase)).ClickUpTypeConfig.Options[index].Name;
+			//}
 
 			DateTime? actualDate = null;
-			var actualDateStringJsonElement = clickUpTask.CustomFields.FirstOrDefault(field => field.Name.Equals(Constants.ClickUp.Fields.ActualDate, StringComparison.InvariantCultureIgnoreCase))?.Value;
+			var actualDateStringJsonElement = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.ActualDate, StringComparison.InvariantCultureIgnoreCase))?.Value;
 
 			if (actualDateStringJsonElement.HasValue)
 			{
