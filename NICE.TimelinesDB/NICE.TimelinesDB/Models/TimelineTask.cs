@@ -25,5 +25,7 @@ namespace NICE.TimelinesDB.Models
         public string DateTypeDescription { get; set; }
         public DateTime? DueDate { get; set; }
         public DateTime? ActualDate { get; set; }
+
+		//TODO: add ClickUpSpaceId, ClickUpListId, rename DateType to Step and add StageId + StageDescription
     }
 }

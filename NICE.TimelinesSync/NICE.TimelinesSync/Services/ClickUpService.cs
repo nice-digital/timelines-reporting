@@ -90,14 +90,14 @@ namespace NICE.TimelinesSync.Services
 			return JsonSerializer.Deserialize<ClickUpLists>(responseJson);
 		}
 
-		public async Task<ClickUpLists> GetListsInFolder(string folderId)
+		private async Task<ClickUpLists> GetListsInFolder(string folderId)
 		{
 			var relativeUri = $"folder/{folderId}/list?archived=false";
 			var responseJson = await HitClickUpEndpoint(relativeUri);
 			return JsonSerializer.Deserialize<ClickUpLists>(responseJson);
 		}
 
-		public async Task<ClickUpTasks> GetTasksInList(string listId)
+		private async Task<ClickUpTasks> GetTasksInList(string listId)
 		{
 			var relativeUri = $"list/{listId}/task?"
 			                  + "custom_fields=[{\"field_id\":\"" + TimelinesCommon.Constants.ClickUp.Fields.KeyDateId + "\",\"operator\":\"=\",\"value\":true}]"
