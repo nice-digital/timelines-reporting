@@ -28,7 +28,7 @@ namespace NICE.TimelinesSync
 			
 			var clickUpConfig = new ClickUpConfig();
 			Configuration.Bind("ClickUp", clickUpConfig);
-
+			
 			RegisterServices(clickUpConfig, Configuration.GetConnectionString("DefaultConnection"));
 
 			var scope = _serviceProvider.CreateScope();

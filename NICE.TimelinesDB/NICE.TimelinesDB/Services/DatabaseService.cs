@@ -1,9 +1,9 @@
-﻿using NICE.TimelinesDB.Models;
+﻿using NICE.TimelinesCommon.Models;
+using NICE.TimelinesDB.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NICE.TimelinesCommon.Models;
 
 namespace NICE.TimelinesDB.Services
 {
@@ -65,12 +65,14 @@ namespace NICE.TimelinesDB.Services
 			}
 		}
 
-		public void DeleteTasksAssociatedWithThisACIDExceptForTheseClickUpTaskIds(int acid,
-			IEnumerable<string> clickUpIdsThatShouldExistInTheDatabase)
+		public void DeleteTasksAssociatedWithThisACIDExceptForTheseClickUpTaskIds(int acid, IEnumerable<string> clickUpIdsThatShouldExistInTheDatabase)
 		{
-			throw new NotImplementedException();
-		}
+			var allTasksInDatabase = _dbContext.TimelineTasks.Where(tt => tt.Acid.Equals(acid)).ToList();
 
+			var tasksThatNeedDeleting = allTasksInDatabase.Where(t => !clickUpIdsThatShouldExistInTheDatabase.Contains(t.ClickUpId));
+
+			_dbContext.RemoveRange(tasksThatNeedDeleting);
+		}
 
 		private static bool TimelineTasksDiffer(TimelineTask task1, TimelineTask task2)
 		{

@@ -16,7 +16,7 @@ namespace NICE.TimelinesSync.Services
 {
 	public interface IClickUpService
 	{
-		Task ProcessSpace(int spaceId);
+		Task ProcessSpace(string spaceId);
 	}
 
 	public class ClickUpService : IClickUpService
@@ -36,17 +36,21 @@ namespace NICE.TimelinesSync.Services
 		}
 
 
-		public async Task ProcessSpace(int spaceId)
+		public async Task ProcessSpace(string spaceId)
 		{
-			var allFoldersInSpace = await GetFoldersInSpace(spaceId);
-
 			var allListsInSpace = new List<ClickUpList>();
-			foreach (var folder in allFoldersInSpace)
+
+			var allFoldersInSpace = (await GetFoldersInSpace(spaceId)).Folders;
+
+			if (allFoldersInSpace.Any())
 			{
-				var lists = (await GetListsInFolder(folder.Id)).Lists;
-				if (lists.Any())
+				foreach (var folder in allFoldersInSpace)
 				{
-					allListsInSpace.AddRange(lists);
+					var lists = (await GetListsInFolder(folder.Id)).Lists;
+					if (lists.Any())
+					{
+						allListsInSpace.AddRange(lists);
+					}
 				}
 			}
 
@@ -61,7 +65,7 @@ namespace NICE.TimelinesSync.Services
 				var tasks = (await GetTasksInList(list.Id)).Tasks;
 
 				int? acid = null;
-				foreach (var task in tasks)
+				foreach (var task in tasks) //TODO: for the beta: batching! reduce the number of database hits - ideally to 1 - if we don't need to update anything. currently there's minimum 1 db hit per task, which is terrible.
 				{
 					acid = Converters.GetACIDFromClickUpTask(task); //TODO: get the ACID from the list, not from a task.
 					await _databaseService.SaveOrUpdateTimelineTask(task);
@@ -70,31 +74,30 @@ namespace NICE.TimelinesSync.Services
 				var clickUpIdsThatShouldExistInTheDatabase = tasks.Select(task => task.ClickUpTaskId);
 				_databaseService.DeleteTasksAssociatedWithThisACIDExceptForTheseClickUpTaskIds(acid.Value, clickUpIdsThatShouldExistInTheDatabase);
 			}
-
 		}
 
-		private async Task<IList<ClickUpFolder>> GetFoldersInSpace(int spaceId)
+		private async Task<ClickUpFolders> GetFoldersInSpace(string spaceId)
 		{
 			var relativeUri = $"space/{spaceId}/folder?archived=false";
 			var responseJson = await HitClickUpEndpoint(relativeUri);
-			return JsonSerializer.Deserialize<IList<ClickUpFolder>>(responseJson);
+			return JsonSerializer.Deserialize<ClickUpFolders>(responseJson);
 		}
 
-		private async Task<ClickUpLists> GetListsInSpaceThatAreNotInFolders(int spaceId)
+		private async Task<ClickUpLists> GetListsInSpaceThatAreNotInFolders(string spaceId)
 		{
 			var relativeUri = $"space/{spaceId}/list?archived=false";
 			var responseJson = await HitClickUpEndpoint(relativeUri);
 			return JsonSerializer.Deserialize<ClickUpLists>(responseJson);
 		}
 
-		public async Task<ClickUpLists> GetListsInFolder(int folderId)
+		public async Task<ClickUpLists> GetListsInFolder(string folderId)
 		{
 			var relativeUri = $"folder/{folderId}/list?archived=false";
 			var responseJson = await HitClickUpEndpoint(relativeUri);
 			return JsonSerializer.Deserialize<ClickUpLists>(responseJson);
 		}
 
-		public async Task<ClickUpTasks> GetTasksInList(int listId)
+		public async Task<ClickUpTasks> GetTasksInList(string listId)
 		{
 			var relativeUri = $"list/{listId}/task?"
 			                  + "custom_fields=[{\"field_id\":\"" + TimelinesCommon.Constants.ClickUp.Fields.KeyDateId + "\",\"operator\":\"=\",\"value\":true}]"

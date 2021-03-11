@@ -8,10 +8,10 @@ namespace NICE.TimelinesCommon.Models
 	public class ClickUpFolder
 	{
 		[JsonPropertyName("id")]
-		public int Id { get; set; }
+		public string Id { get; set; }
 
 		[JsonPropertyName("name")]
-		public int Name { get; set; }
+		public string Name { get; set; }
 
 		[JsonPropertyName("lists")]
 		public IList<ClickUpList> Lists { get; set; }
