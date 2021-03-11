@@ -36,11 +36,11 @@ namespace NICE.TimelinesDB.Models
             {
                 entity.ToTable("TimelineTask");
 
-                entity.Property(e => e.Acid).HasColumnName("ACID");
+                entity.Property(e => e.ACID).HasColumnName("ACID");
 
-                entity.Property(e => e.ClickUpId).HasMaxLength(50);
+                entity.Property(e => e.ClickUpTaskId).HasMaxLength(50);
 
-                entity.Property(e => e.DateTypeDescription)
+                entity.Property(e => e.StepDescription)
                     .IsRequired()
                     .HasMaxLength(255);
             });

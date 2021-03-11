@@ -7,7 +7,7 @@ namespace NICE.TimelinesCommon.Models
 	public class ClickUpCustomField
 	{
 		[JsonPropertyName("id")]
-		public Guid FieldId { get; set; }
+		public string FieldId { get; set; }
 
 		[JsonPropertyName("name")]
 		public string Name { get; set; }

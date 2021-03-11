@@ -8,24 +8,35 @@ namespace NICE.TimelinesDB.Models
     public partial class TimelineTask
     {
 	    public TimelineTask() { }
-	    public TimelineTask(int acid, string clickUpId, int dateTypeId, string dateTypeDescription, DateTime? dueDate, DateTime? actualDate)
+
+	    public TimelineTask(int acid, int stepId, string stepDescription, int stageId, string stageDescription, string clickUpSpaceId, string clickUpFolderId, string clickUpTaskId, DateTime? dueDate, DateTime? actualDate)
 	    {
-		    Acid = acid;
-		    ClickUpId = clickUpId;
-		    DateTypeId = dateTypeId;
-		    DateTypeDescription = dateTypeDescription;
+		    ACID = acid;
+		    StepId = stepId;
+		    StepDescription = stepDescription;
+		    StageId = stageId;
+		    StageDescription = stageDescription;
+		    ClickUpSpaceId = clickUpSpaceId;
+		    ClickUpFolderId = clickUpFolderId;
+		    ClickUpTaskId = clickUpTaskId;
 		    DueDate = dueDate;
 		    ActualDate = actualDate;
 	    }
 
-        public int TimelineTaskId { get; set; }
-        public int Acid { get; set; }
-        public string ClickUpId { get; set; }
-        public int DateTypeId { get; set; }
-        public string DateTypeDescription { get; set; }
-        public DateTime? DueDate { get; set; }
-        public DateTime? ActualDate { get; set; }
+	    public int TimelineTaskId { get; set; }
+        public int ACID { get; set; }
+		
+        public int StepId { get; set; }
+        public string StepDescription { get; set; }
 
-		//TODO: add ClickUpSpaceId, ClickUpListId, rename DateType to Step and add StageId + StageDescription
+        public int StageId { get; set; }
+        public string StageDescription { get; set; }
+
+		public string ClickUpSpaceId { get; set; }
+        public string ClickUpFolderId { get; set; }
+		public string ClickUpTaskId { get; set; }
+
+		public DateTime? DueDate { get; set; }
+        public DateTime? ActualDate { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace NICE.TimelinesDB
 	{
 		public static int GetACIDFromClickUpTask(ClickUpTask clickUpTask)
 		{
-			return int.Parse(clickUpTask.CustomFields.First(field => field.Name.Equals(Constants.ClickUp.Fields.ACID, StringComparison.InvariantCultureIgnoreCase)).Value.ToObject<string>()); //TODO: ACID is a string in clickup. needs to be a number.
+			return int.Parse(clickUpTask.CustomFields.First(field => field.FieldId.Equals(Constants.ClickUp.Fields.ACID, StringComparison.InvariantCultureIgnoreCase)).Value.ToObject<string>()); //TODO: ACID is a string in clickup. needs to be a number.
 		}
 
 		/// <summary>
@@ -23,15 +23,26 @@ namespace NICE.TimelinesDB
 		{
 			var acid = GetACIDFromClickUpTask(clickUpTask);
 
-			var dateTypeId = 0;
-			string dateTypeDescription = "Not found";
-			var dateTypeField = clickUpTask.CustomFields.FirstOrDefault(field => field.Name.Equals(Constants.ClickUp.Fields.DateType, StringComparison.InvariantCultureIgnoreCase));
-			if (dateTypeField != null && dateTypeField.Value.ValueKind != System.Text.Json.JsonValueKind.Undefined)
+			var stepId = 0;
+			var stepDescription = "Not found";
+			var stepField = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StepId, StringComparison.InvariantCultureIgnoreCase));
+			if (stepField != null && stepField.Value.ValueKind != System.Text.Json.JsonValueKind.Undefined)
 			{
-				var index = dateTypeField.Value.ToObject<int>();
-				dateTypeId = int.Parse(dateTypeField.ClickUpTypeConfig.Options[index].Name);
+				var index = stepField.Value.ToObject<int>();
+				stepId = int.Parse(stepField.ClickUpTypeConfig.Options[index].Name);
 
-				dateTypeDescription = clickUpTask.CustomFields.FirstOrDefault(field => field.Name.Equals(Constants.ClickUp.Fields.DateTypeDescription, StringComparison.InvariantCultureIgnoreCase)).ClickUpTypeConfig.Options[index].Name;
+				stepDescription = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StepDescription, StringComparison.InvariantCultureIgnoreCase)).ClickUpTypeConfig.Options[index].Name;
+			}
+
+			var stageId = 0;
+			var stageDescription = "Not found";
+			var stageField = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageId, StringComparison.InvariantCultureIgnoreCase));
+			if (stageField != null && stageField.Value.ValueKind != System.Text.Json.JsonValueKind.Undefined)
+			{
+				var index = stageField.Value.ToObject<int>();
+				stageId = int.Parse(stageField.ClickUpTypeConfig.Options[index].Name);
+
+				stageDescription = clickUpTask.CustomFields.FirstOrDefault(field => field.FieldId.Equals(Constants.ClickUp.Fields.StageDescription, StringComparison.InvariantCultureIgnoreCase)).ClickUpTypeConfig.Options[index].Name;
 			}
 
 			DateTime? actualDate = null;
@@ -48,7 +59,7 @@ namespace NICE.TimelinesDB
 
 			var dueDate = string.IsNullOrEmpty(clickUpTask.DueDateSecondsSinceUnixEpochAsString) ? null : double.Parse(clickUpTask.DueDateSecondsSinceUnixEpochAsString).ToDateTime();
 
-			return new TimelineTask(acid, clickUpTask.ClickUpTaskId, dateTypeId, dateTypeDescription, dueDate, actualDate);
+			return new TimelineTask(acid, stepId, stepDescription, stageId, stageDescription, "todo: space id", "todo: folder id", clickUpTask.ClickUpTaskId, dueDate, actualDate);
 		}
 	}
 }
