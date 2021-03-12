@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Models;
 using NICE.TimelinesDB.Models;
 using NICE.TimelinesDB.Services;
 
-namespace NICE.Timelines
+namespace NICE.TimelinesAPI
 {
 	public class Startup
 	{

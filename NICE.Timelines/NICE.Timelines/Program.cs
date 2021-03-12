@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace NICE.Timelines
+namespace NICE.TimelinesAPI
 {
 	public class Program
 	{

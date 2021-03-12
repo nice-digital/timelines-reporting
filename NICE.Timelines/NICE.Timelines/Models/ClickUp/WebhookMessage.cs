@@ -1,8 +1,8 @@
-﻿using NICE.TimelinesCommon.Models;
-using System;
+﻿using System;
 using System.Text.Json.Serialization;
+using NICE.TimelinesCommon.Models;
 
-namespace NICE.Timelines.Models
+namespace NICE.TimelinesAPI.Models.ClickUp
 {
 	public class WebhookMessage
 	{

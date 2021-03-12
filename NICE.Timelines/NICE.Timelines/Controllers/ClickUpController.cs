@@ -1,11 +1,11 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NICE.Timelines.Models;
-using System.Threading.Tasks;
+using NICE.TimelinesAPI.Models.ClickUp;
 using NICE.TimelinesDB.Services;
 
-namespace NICE.Timelines.Controllers
+namespace NICE.TimelinesAPI.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]

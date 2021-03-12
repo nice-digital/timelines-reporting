@@ -65,7 +65,7 @@ namespace NICE.TimelinesSync.Services
 				var tasks = (await GetTasksInList(list.Id)).Tasks;
 
 				int? acid = null;
-				foreach (var task in tasks) //TODO: for the beta: batching! reduce the number of database hits - ideally to 1 - if we don't need to update anything. currently there's minimum 1 db hit per task, which is terrible.
+				foreach (var task in tasks) //TODO: for the beta: batching reduce the number of database hits - ideally to 1 - if we don't need to update anything. currently there's minimum 1 db hit per task
 				{
 					acid = Converters.GetACIDFromClickUpTask(task); //TODO: get the ACID from the list, not from a task.
 					await _databaseService.SaveOrUpdateTimelineTask(task);
@@ -79,22 +79,19 @@ namespace NICE.TimelinesSync.Services
 		private async Task<ClickUpFolders> GetFoldersInSpace(string spaceId)
 		{
 			var relativeUri = $"space/{spaceId}/folder?archived=false";
-			var responseJson = await HitClickUpEndpoint(relativeUri);
-			return JsonSerializer.Deserialize<ClickUpFolders>(responseJson);
+			return await ReturnClickUpData<ClickUpFolders>(relativeUri);
 		}
 
 		private async Task<ClickUpLists> GetListsInSpaceThatAreNotInFolders(string spaceId)
 		{
 			var relativeUri = $"space/{spaceId}/list?archived=false";
-			var responseJson = await HitClickUpEndpoint(relativeUri);
-			return JsonSerializer.Deserialize<ClickUpLists>(responseJson);
+			return await ReturnClickUpData<ClickUpLists>(relativeUri);
 		}
 
 		private async Task<ClickUpLists> GetListsInFolder(string folderId)
 		{
 			var relativeUri = $"folder/{folderId}/list?archived=false";
-			var responseJson = await HitClickUpEndpoint(relativeUri);
-			return JsonSerializer.Deserialize<ClickUpLists>(responseJson);
+			return await ReturnClickUpData<ClickUpLists>(relativeUri);
 		}
 
 		private async Task<ClickUpTasks> GetTasksInList(string listId)
@@ -102,11 +99,10 @@ namespace NICE.TimelinesSync.Services
 			var relativeUri = $"list/{listId}/task?"
 			                  + "custom_fields=[{\"field_id\":\"" + TimelinesCommon.Constants.ClickUp.Fields.MasterScheduleReportId + "\",\"operator\":\"=\",\"value\":true}]"
 			                  + "&include_closed=true&page=0"; //todo: paging
-			var responseJson = await HitClickUpEndpoint(relativeUri);
-			return JsonSerializer.Deserialize<ClickUpTasks>(responseJson);
+			return await ReturnClickUpData<ClickUpTasks>(relativeUri);
 		}
 
-		private async Task<string> HitClickUpEndpoint(string relativeUri)
+		private async Task<T> ReturnClickUpData<T>(string relativeUri)
 		{
 			var requestUri = new Uri(new Uri("https://api.clickup.com/api/v2/"), relativeUri);
 			var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
@@ -117,7 +113,8 @@ namespace NICE.TimelinesSync.Services
 			{
 				throw new Exception($"Non-200 received from ClickUp: {(int)response.StatusCode}");
 			}
-			return await response.Content.ReadAsStringAsync();
+			var responseJson = await response.Content.ReadAsStringAsync();
+			return JsonSerializer.Deserialize<T>(responseJson);
 		}
 	}
 }
