@@ -16,7 +16,7 @@ namespace NICE.TimelinesSync.Services
 {
 	public interface IClickUpService
 	{
-		Task ProcessSpace(string spaceId);
+		Task<int> ProcessSpace(string spaceId);
 	}
 
 	public class ClickUpService : IClickUpService
@@ -36,9 +36,10 @@ namespace NICE.TimelinesSync.Services
 		}
 
 
-		public async Task ProcessSpace(string spaceId)
+		public async Task<int> ProcessSpace(string spaceId)
 		{
 			var allListsInSpace = new List<ClickUpList>();
+			var recordsSaveOrUpdated = 0;
 
 			var allFoldersInSpace = (await GetFoldersInSpace(spaceId)).Folders;
 
@@ -68,12 +69,14 @@ namespace NICE.TimelinesSync.Services
 				foreach (var task in tasks) //TODO: for the beta: batching reduce the number of database hits - ideally to 1 - if we don't need to update anything. currently there's minimum 1 db hit per task
 				{
 					acid = Converters.GetACIDFromClickUpTask(task); //TODO: get the ACID from the list, not from a task.
-					await _databaseService.SaveOrUpdateTimelineTask(task);
+					recordsSaveOrUpdated += await _databaseService.SaveOrUpdateTimelineTask(task);
 				}
 
 				var clickUpIdsThatShouldExistInTheDatabase = tasks.Select(task => task.ClickUpTaskId);
 				_databaseService.DeleteTasksAssociatedWithThisACIDExceptForTheseClickUpTaskIds(acid.Value, clickUpIdsThatShouldExistInTheDatabase);
 			}
+
+			return recordsSaveOrUpdated;
 		}
 
 		private async Task<ClickUpFolders> GetFoldersInSpace(string spaceId)

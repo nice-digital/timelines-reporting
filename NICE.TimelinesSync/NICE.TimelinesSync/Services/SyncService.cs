@@ -26,8 +26,11 @@ namespace NICE.TimelinesSync.Services
 
 			foreach (var spaceId in _clickUpConfig.SpaceIds)
 			{
-				Console.WriteLine($"Started with space:{spaceId}");
-				await _clickUpService.ProcessSpace(spaceId);
+				Console.WriteLine($"Started with space: {spaceId}");
+
+				var recordsSaveOrUpdated = await _clickUpService.ProcessSpace(spaceId);
+
+				Console.WriteLine($"finished with space: {spaceId} records saved or updated: {recordsSaveOrUpdated}");
 			}
 
 			Console.WriteLine("Ended processing");

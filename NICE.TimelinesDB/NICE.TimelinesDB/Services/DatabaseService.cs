@@ -9,7 +9,7 @@ namespace NICE.TimelinesDB.Services
 {
 	public interface IDatabaseService
 	{
-		Task SaveOrUpdateTimelineTask(ClickUpTask clickUpTask);
+		Task<int> SaveOrUpdateTimelineTask(ClickUpTask clickUpTask);
 		Task DeleteTimelineTask(ClickUpTask clickUpTask);
 		void DeleteTasksAssociatedWithThisACIDExceptForTheseClickUpTaskIds(int acid, IEnumerable<string> clickUpIdsThatShouldExistInTheDatabase);
 	}
@@ -23,7 +23,7 @@ namespace NICE.TimelinesDB.Services
 			_dbContext = dbContext;
 		}
 
-		public async Task SaveOrUpdateTimelineTask(ClickUpTask clickUpTask)
+		public async Task<int> SaveOrUpdateTimelineTask(ClickUpTask clickUpTask)
 		{
 			var timelineTaskToSaveOrUpdate = Converters.ConvertToTimelineTask(clickUpTask);
 
@@ -33,7 +33,7 @@ namespace NICE.TimelinesDB.Services
 			{
 				if (!TimelineTasksDiffer(existingTimelineTask, timelineTaskToSaveOrUpdate)) //task matches the task in the database, so don't bother updating it.
 				{
-					return;
+					return 0;
 				}
 
 				existingTimelineTask.ACID = timelineTaskToSaveOrUpdate.ACID;
@@ -57,7 +57,7 @@ namespace NICE.TimelinesDB.Services
 				_dbContext.Add(timelineTaskToSaveOrUpdate);
 			}
 
-			await _dbContext.SaveChangesAsync();
+			return await _dbContext.SaveChangesAsync();
 		}
 
 		public async Task DeleteTimelineTask(ClickUpTask clickUpTask)
