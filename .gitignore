@@ -253,3 +253,12 @@ netcoreapp2.0/*
 
 
 /NICE.Timelines/NICE.Timelines/logs
+/NICE.Timelines.API/logs/serilog2021031709.txt
+/NICE.Timelines.API/logs/serilog2021031214.txt
+/NICE.Timelines.API/logs/serilog2021031213.txt
+/NICE.Timelines.API/logs/serilog2021031211.txt
+/NICE.Timelines.API/logs/serilog2021030514.txt
+/NICE.Timelines.API/logs/serilog2021030513.txt
+/NICE.Timelines.API/logs/serilog2021030512.txt
+/NICE.Timelines.API/logs/serilog2021030511.txt
+/NICE.Timelines.API/logs
